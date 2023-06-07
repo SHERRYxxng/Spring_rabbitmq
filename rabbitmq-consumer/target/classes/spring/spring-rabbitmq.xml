@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/rabbit
+       http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
+    <!--加载配置文件-->
+    <context:property-placeholder location="classpath:properties/rabbitmq.properties"/>
+
+    <!-- 定义rabbitmq connectionFactory  创建了一个名叫connectionFactory的工厂,相当于util中的配置连接工厂和数据源-->
+    <rabbit:connection-factory id="connectionFactory" host="${rabbitmq.host}"
+                               port="${rabbitmq.port}"
+                               username="${rabbitmq.username}"
+                               password="${rabbitmq.password}"
+                               virtual-host="${rabbitmq.virtual-host}"/>
+<!--    定义管理交换机、队列-->
+    <rabbit:admin connection-factory="connectionFactory"/>
+<!--    声明队列-->
+<!--    声明交换机-->
+<!--    绑定队列-->
+<!--    配置监听简单模式队列的监听器-->
+    <bean class="sherry.listener.SimpleListener" id="simpleListener">
+
+    </bean>
+    <!--    配置监容器容器-->
+    <rabbit:listener-container connection-factory="connectionFactory" auto-declare="true">
+<!--        配置监听器 queue-names指定消费者消费的队列的名字-->
+        <rabbit:listener ref="simpleListener" queue-names="spring_simple_queue"></rabbit:listener>
+    </rabbit:listener-container>
+</beans>
